@@ -2,3 +2,5 @@
 
 from .lpips import LPIPS
 from .codebook import Codebook
+from .base_vision import ImageTransform, VisionBackbone
+from .dinov2_vit import DinoV2ViTBackbone
