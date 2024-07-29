@@ -12,6 +12,7 @@ import argparse
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from tokenizer import VQGANVisionActionEval, VideoData, get_image_action_dataloader, count_parameters
+from llm_backbone import MistralInVisionActionFeatMask
 # from vla import get_VLA_dataset
 from configs import H4ArgumentParser, DataArguments, VLAModelArguments, TATSModelArguments
 from pytorch_lightning.strategies import DeepSpeedStrategy
@@ -119,7 +120,7 @@ def main():
     for k in result.missing_keys:
         assert 'discriminator' in k or 'perceptual_model' in k
     model_vq = model_vq.eval().to(device)
-
+    
     vla_pipe = mii.pipeline(vla_args.model_name_or_path)
 
     # 1. encode the images and actions
