@@ -223,7 +223,7 @@ class DataArguments:
         metadata={"help": "The root directory of the data."}
     )
     padding_side: Optional[str] = field(
-        default='right', metadata={
+        default='left', metadata={
             "help": "Truncation side to use for the tokenizer.",
             "choices": ["right", "left"],
         }
@@ -249,7 +249,7 @@ class DataArguments:
         metadata={"help": ("The number of output frames to use for the model.")},
     )
     num_visual_action_tokens: Optional[int] = field(
-        default=2048,
+        default=16384,
         metadata={"help": ("The number of visual tokens to use for the model.")},
     )
     # argument that accepts a list of strings

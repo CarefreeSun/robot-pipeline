@@ -35,5 +35,4 @@ imageio-ffmpeg
 regex
 scikit-video
 prettytable
-deepspeed-mii==0.2.3
 pytorch-lightning>=2.0
