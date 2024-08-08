@@ -139,10 +139,10 @@ def call_vla(instance_data: dict,
     # output = vla_pipe([input_text], max_new_tokens=1024)
     # output_text = output[0].generated_text
     print(output_text)
-    output_action_tokens_pred = [int(x[:-1]) for x in output_text.split('<eoa_o>')[0].split('<boa_o>')[-1].split('<va') if x != '']
+    output_action_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eoa_o>')[0].split('<boa_o>')[-1].split(' <va') if x != '']
     output_action_tokens_pred = torch.tensor(output_action_tokens_pred, device=device).unsqueeze(0).reshape(1, 6, 7)
 
-    output_clip_description_pred = output_text.split('<eotp_o>')[0].split('<botp_o>')[-1]
+    output_clip_description_pred = output_text.split(' <eotp_o>')[0].split('<botp_o> ')[-1]
 
     return output_action_tokens_pred, output_clip_description_pred
 
