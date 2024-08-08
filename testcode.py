@@ -132,7 +132,7 @@ def call_vla(instance_data: dict,
     input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
                 '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>'
         
-    inputs = tokenizer(input_text, return_tensors='pt')
+    inputs = tokenizer(input_text, return_tensors='pt').to(device)
     generate_ids = vla_pipe.generate(inputs.input_ids, max_length=1280)
     output_text = tokenizer.batch_decode(generate_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)[0]
 
