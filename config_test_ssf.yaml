@@ -1,0 +1,16 @@
+# VLA Model arguments
+model_name_or_path: /mnt/data-rundong/VLA-experiments/0805-tokenize0722-step_95000-bridgeRT-woVision-vaFeat-noMask-mistral-piece1of2/checkpoint-20000/
+model_revision: main
+torch_dtype: float16
+use_flash_attention_2: false
+
+# Data training arguments
+static_video_description:
+  - ""
+src_filepath: ./test_data/sample-bridge.json
+save_dir: /mnt/data-rundong/checkpoints/mistral/debug/pred_results_bridge2
+action_before_vision: false
+dataset_name: bridge2
+
+# TATS Tokenizer Arguments
+weight_path: /mnt/data-rundong/VQ3D-vision-action/0725-dinov2-action111-bridgeRT-noMask-woResidual-usePixelWeight-continueTrain0722/checkpoints/step_checkpoint-step_95000.ckpt
