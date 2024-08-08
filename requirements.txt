@@ -34,3 +34,4 @@ imageio-ffmpeg
 regex
 scikit-video
 prettytable
+timm
