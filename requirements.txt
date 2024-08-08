@@ -34,4 +34,3 @@ imageio-ffmpeg
 regex
 scikit-video
 prettytable
-horovod
