@@ -232,7 +232,7 @@ def main():
     model_vla = MistralInVisionActionFeatMask.from_pretrained(llm_checkpoint_path, 
                                                         tokenizer, va_embed, 0., **model_kwargs)
     # Load weights of embed_tokens
-    model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path)
+    model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path).eval().to(device)
     # vla_pipe = mii.pipeline(vla_args.model_name_or_path)
 
     # 1. encode the images and actions
