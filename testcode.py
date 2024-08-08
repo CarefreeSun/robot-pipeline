@@ -56,7 +56,7 @@ from PIL import Image
 
 import os
 import argparse
-from tokenizer import VQGANVisionActionEval, VideoData, get_image_action_dataloader, count_parameters
+from tokenizer import VQGANVisionActionEval
 from llm_backbone import MistralInVisionActionFeatMask, Codebook
 # from vla import get_VLA_dataset
 from configs import H4ArgumentParser, DataArguments, VLAModelArguments, TATSModelArguments
@@ -65,13 +65,13 @@ from collections import OrderedDict
 from transformers import LlamaTokenizer
 from safetensors import safe_open
 
-import logging
-import random
-import sys
-import transformers
+# import logging
+# import random
+# import sys
+# import transformers
 import os
 import json
-import time
+# import time
 
 def load_safetensors_weights(model, checkpoint_dir): 
     weights_files = [f for f in os.listdir(checkpoint_dir) if f.endswith('.safetensors')] 
