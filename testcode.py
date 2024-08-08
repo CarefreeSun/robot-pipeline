@@ -175,8 +175,7 @@ def main():
     vla_args, data_args, tats_args = parser.parse()
 
     local_rank = os.getenv('LOCAL_RANK', 0)
-    # device = f'cuda:{local_rank}'
-    device='cpu'
+    device = f'cuda:{local_rank}'
 
     assert tats_args.sequence_length == 6
 
@@ -252,7 +251,8 @@ def main():
     # call the models, override original actions and clip description with the predicted ones
     instance_data = call_models(instance_data, model_vq, tokenizer, model_vla, tats_args, data_args, device)
 
-    print(instance_data)
+    print(instance_data['clip_description'])
+    print(instance_data['actions'])
 
     # call the robot, override the image_paths and actions with the actual ones
     # instance_data = call_robot(instance_data, robot)
