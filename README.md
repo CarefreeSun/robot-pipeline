@@ -31,9 +31,8 @@ VQ model
 - refer to ./tokenizer/tats_dinov2_action.py
 - please pay attention to ./tokenizer/modules/dinov2_vit.py. 
   - revise the value of DINOv2_MODEL_PATH to your Dino V2 path. You can download the weights from:
-    - [Azure URL](https://azsussc.blob.core.windows.net/v-rundongluo/huggingface/hub/models--dinov2-vit-large-patch14-reg4-lvd142m/?sv=2020-10-02&se=2024-09-08T02%3A13%3A08Z&sr=c&sp=rl&sig=WX774XGGuf%2BKeW2QDZCLx%2BChmsd241zyeHz1X9z%2Bi1I%3D")
     - [huggingface](https://huggingface.co/timm/vit_large_patch14_reg4_dinov2.lvd142m/tree/main)
   - also note that the weight is NOT used. I just copy the initialization code for training. If possible, you can revise the code to avoid loading the original weights of Dino V2.
-  
+
 LLM
 - refer to ./llm_backbone/input_vision_feat_wmask.py
