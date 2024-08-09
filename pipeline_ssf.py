@@ -9,25 +9,17 @@ from PIL import Image
 
 import os
 import argparse
-import pytorch_lightning as pl
-from pytorch_lightning.callbacks import ModelCheckpoint
-from tokenizer import VQGANVisionActionEval, VideoData, get_image_action_dataloader, count_parameters
+from tokenizer import VQGANVisionActionEval
 from llm_backbone import MistralInVisionActionFeatMask, Codebook
 # from vla import get_VLA_dataset
 from configs import H4ArgumentParser, DataArguments, VLAModelArguments, TATSModelArguments
-from pytorch_lightning.strategies import DeepSpeedStrategy
 from torchvision import transforms
 from collections import OrderedDict
 from transformers import LlamaTokenizer
 from safetensors import safe_open
 
-import logging
-import random
-import sys
-import transformers
 import os
 import json
-import time
 
 def load_safetensors_weights(model, checkpoint_dir): 
     weights_files = [f for f in os.listdir(checkpoint_dir) if f.endswith('.safetensors')] 
@@ -42,6 +34,13 @@ def load_safetensors_weights(model, checkpoint_dir):
                     else:
                         print('Skip key {}'.format(key))
     return model
+
+def generate_img_paths():
+    image_paths = []
+    image_path_format = './test_images/outputimage_0_{}_0.png'
+    for i in range(6):
+        image_paths.append(image_path_format.format(i))
+    return image_paths
 
 @torch.no_grad()
 def encode(instance_data, model, tats_args, device):
@@ -78,34 +77,28 @@ def call_vla(instance_data: dict,
     input_text = '<bott_i>' + instance_data['task_description'] + '<eott_i>' + \
                 '<bots_i>' + instance_data['scene_description'] + '<eots_i>' + \
                 '<botp_i>' + instance_data['clip_description'] + '<eotp_i>'
-
-    if data_args.action_before_vision:
-        input_text += '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>' + \
-                '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>'
-    else:
-        input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
+    input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
                 '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>'
         
-    inputs = tokenizer(input_text, return_tensors='pt')
+    inputs = tokenizer(input_text, return_tensors='pt').to(device)
     generate_ids = vla_pipe.generate(inputs.input_ids, max_length=1280)
     output_text = tokenizer.batch_decode(generate_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)[0]
-
     # output = vla_pipe([input_text], max_new_tokens=1024)
     # output_text = output[0].generated_text
-
-    output_action_tokens_pred = [int(x[:-1]) for x in output_text.split('<eoa_o>')[0].split('<boa_o>')[-1].split('<va') if x != '']
+    
+    output_action_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eoa_o>')[0].split('<boa_o>')[-1].split(' <va') if x != '']
     output_action_tokens_pred = torch.tensor(output_action_tokens_pred, device=device).unsqueeze(0).reshape(1, 6, 7)
 
-    output_clip_description_pred = output_text.split('<eotp_o>')[0].split('<botp_o>')[-1]
+    output_clip_description_pred = output_text.split(' <eotp_o>')[0].split('<botp_o> ')[-1]
 
     return output_action_tokens_pred, output_clip_description_pred
 
-def call_models(instance_data, model_vq: VQGANVisionActionEval, vla_pipe: MistralInVisionActionFeatMask, 
+def call_models(instance_data, model_vq: VQGANVisionActionEval, tokenizer: LlamaTokenizer, vla_pipe: MistralInVisionActionFeatMask,  
                 tats_args: TATSModelArguments, data_args: DataArguments, device):
     
     video_tokens, action_tokens = encode(instance_data, model_vq, tats_args, device=device)
 
-    output_action_tokens_pred, output_clip_description_pred = call_vla(instance_data, video_tokens, action_tokens, vla_pipe, data_args, device)
+    output_action_tokens_pred, output_clip_description_pred = call_vla(instance_data, video_tokens, action_tokens, tokenizer, vla_pipe, data_args, device)
 
     output_action_pred = model_vq.decode_action(output_action_tokens_pred).squeeze(0).detach().cpu() # 6, 7
 
@@ -142,8 +135,7 @@ def main():
     model_vq = model_vq.eval().to(device)
 
     # va_embed
-    va_embed = Codebook(tats_args.va_ncodes, tats_args.va_embedding_dim)
-    # state_dict = torch.load(tats_args.va_checkpoint, map_location='cpu')['state_dict'] 
+    va_embed = Codebook(tats_args.n_codes, tats_args.embedding_dim)
     # reuse the state_dict above
     new_state_dict = OrderedDict()
     for key in list(state_dict.keys()):
@@ -186,8 +178,7 @@ def main():
     model_vla = MistralInVisionActionFeatMask.from_pretrained(llm_checkpoint_path, 
                                                         tokenizer, va_embed, 0., **model_kwargs)
     # Load weights of embed_tokens
-    model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path)
-    # vla_pipe = mii.pipeline(vla_args.model_name_or_path)
+    model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path).eval().to(device)
 
     # 1. encode the images and actions
     # the src_filepath should contain the following fields
@@ -200,8 +191,13 @@ def main():
 
         instance_data = json.loads(line)
 
+    instance_data['image_paths'] = generate_img_paths()
+
     # call the models, override original actions and clip description with the predicted ones
-    instance_data = call_models(instance_data, model_vq, model_vla, tats_args, data_args, device)
+    instance_data = call_models(instance_data, model_vq, tokenizer, model_vla, tats_args, data_args, device)
+
+    print(instance_data['clip_description'])
+    print(instance_data['actions'])
 
     # call the robot, override the image_paths and actions with the actual ones
     # instance_data = call_robot(instance_data, robot)

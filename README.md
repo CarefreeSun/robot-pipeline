@@ -20,3 +20,20 @@ You should modify the config file to specify the model path, data path, and othe
   - "image_indices": a list of indices of the frames in the view, typically being [0, 1, 2, ..., num_frames-1], however, the length of the video clips may not be divided by 6, so we need to pad the video clips to the length of 6, thus the final several frames are repeated.
   - "actions": a list of actions, each being a vector with 7 elements
   - "mean", "std": mean and std of the actions in the specified dataset
+
+# Update by Sun Shaofan
+Use ```pipeline_ssf.py```
+- generate_img_paths() is for debugging, it should be rewritten or the data should be pre-processed to cover the "image_paths" field.
+- the update of code mainly lies in the initialization of model and in line 83 to 92 of call_vla()  
+- an example of config file can refer to ./testcodes/config_test_ssf.yaml
+
+VQ model
+- refer to ./tokenizer/tats_dinov2_action.py
+- please pay attention to ./tokenizer/modules/dinov2_vit.py. 
+  - revise the value of DINOv2_MODEL_PATH to your Dino V2 path. You can download the weights from:
+    - [Azure URL](https://azsussc.blob.core.windows.net/v-rundongluo/huggingface/hub/models--dinov2-vit-large-patch14-reg4-lvd142m/?sv=2020-10-02&se=2024-09-08T02%3A13%3A08Z&sr=c&sp=rl&sig=WX774XGGuf%2BKeW2QDZCLx%2BChmsd241zyeHz1X9z%2Bi1I%3D")
+    - [huggingface](https://huggingface.co/timm/vit_large_patch14_reg4_dinov2.lvd142m/tree/main)
+  - also note that the weight is NOT used. I just copy the initialization code for training. If possible, you can revise the code to avoid loading the original weights of Dino V2.
+  
+LLM
+- refer to ./llm_backbone/input_vision_feat_wmask.py
