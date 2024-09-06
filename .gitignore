@@ -1,0 +1,6 @@
+*/__pycache__/*
+./results/*
+./logs/*
+./testcode.py
+./vla_checkpoint/*
+./tats_checkpoint/*
