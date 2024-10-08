@@ -36,3 +36,7 @@ VQ model
 
 LLM
 - refer to ./llm_backbone/input_vision_feat_wmask.py
+
+# Update by Sun Shaofan 10.8
+NEW 4-layer Action Decoder
+- in ./tokenizer/tats_dinov2_action.py line 732.

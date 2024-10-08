@@ -706,12 +706,42 @@ class ActionEncoderStack(nn.Module):
         x_split = torch.split(x, self.input_dims, dim=-1) # (B, T, input_dim) 
         return torch.cat([encoder(x_) for encoder, x_ in zip(self.encoders, x_split)], dim=-1) # B, T, embed_dim, 7 (sum of input_dims)
 
+# class ActionDecoder(nn.Module):
+#     def __init__(self, embed_dim, hidden_dim, output_dim, activation=torch.tanh):
+#         super().__init__()
+#         self.fc1 = nn.Linear(embed_dim * output_dim, hidden_dim)
+#         self.dropout = nn.Dropout(0.1)
+#         self.fc2 = nn.Linear(hidden_dim, output_dim)
+#         self.start_block = nn.Sequential(
+#             SiLU(),
+#             nn.LayerNorm(embed_dim * output_dim)
+#         )
+#         self.activation = activation
+
+#     def forward(self, x):
+#         # x is in shape B, T, embed_dim
+#         # for the output, the last entry falls into [0, 1] while other entries are in [-1, 1]
+#         h = self.start_block(x)
+#         h = self.fc1(h)
+#         h = self.dropout(h)
+#         h = self.fc2(h)
+#         h = self.activation(h)
+#         # h = torch.cat([torch.tanh(h[:, :-1]), torch.sigmoid(h[:, -1:])], dim=1)
+#         return h
+    
 class ActionDecoder(nn.Module):
     def __init__(self, embed_dim, hidden_dim, output_dim, activation=torch.tanh):
         super().__init__()
-        self.fc1 = nn.Linear(embed_dim * output_dim, hidden_dim)
-        self.dropout = nn.Dropout(0.1)
-        self.fc2 = nn.Linear(hidden_dim, output_dim)
+        self.fc1 = nn.Linear(embed_dim * output_dim, hidden_dim * 4)
+        self.act1 = SiLU()
+        self.dropout1 = nn.Dropout(0.1)
+        self.fc2 = nn.Linear(hidden_dim * 4, hidden_dim * 4)
+        self.act2 = SiLU()
+        self.dropout2 = nn.Dropout(0.1)
+        self.fc3 = nn.Linear(hidden_dim * 4, hidden_dim)
+        self.act3 = SiLU()
+        self.dropout3 = nn.Dropout(0.1)
+        self.fc4 = nn. Linear(hidden_dim, output_dim)
         self.start_block = nn.Sequential(
             SiLU(),
             nn.LayerNorm(embed_dim * output_dim)
@@ -723,8 +753,15 @@ class ActionDecoder(nn.Module):
         # for the output, the last entry falls into [0, 1] while other entries are in [-1, 1]
         h = self.start_block(x)
         h = self.fc1(h)
-        h = self.dropout(h)
+        h = self.act1(h)
+        h = self.dropout1(h)
         h = self.fc2(h)
+        h = self.act2(h)
+        h = self.dropout2(h)
+        h = self.fc3(h)
+        h = self.act3(h)
+        h = self.dropout3(h)
+        h = self.fc4(h)
         h = self.activation(h)
         # h = torch.cat([torch.tanh(h[:, :-1]), torch.sigmoid(h[:, -1:])], dim=1)
         return h
