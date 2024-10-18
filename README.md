@@ -40,3 +40,6 @@ LLM
 # Update by Sun Shaofan 10.8
 NEW 4-layer Action Decoder
 - in ./tokenizer/tats_dinov2_action.py line 732.
+
+# Update by Sun Shaofan 10.18
+NEW 2- and 3- layer Action Decoder 
