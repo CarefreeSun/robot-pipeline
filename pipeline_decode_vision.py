@@ -35,11 +35,11 @@ def load_safetensors_weights(model, checkpoint_dir):
                         print('Skip key {}'.format(key))
     return model
 
-def generate_img_paths():
+def generate_img_paths(tid):
     image_paths = []
-    image_path_format = './test_images/outputimage_0_{}_0.png'
+    image_path_format = './test_images/outputimage_{}_{}_0.png'
     for i in range(6):
-        image_paths.append(image_path_format.format(i))
+        image_paths.append(image_path_format.format(tid, i))
     return image_paths
 
 @torch.no_grad()
@@ -196,31 +196,32 @@ def main():
     # actions, mean, std (for normalizing the actions)
     with open(data_args.src_filepath, 'r') as f:
         lines = f.readlines()
-        assert len(lines) == 1
-        line = lines[0]
+        
+        for k in range(len(lines)):
+            line = lines[k]
 
-        instance_data = json.loads(line)
+            instance_data = json.loads(line)
 
-    instance_data['image_paths'] = generate_img_paths()
+            instance_data['image_paths'] = generate_img_paths(instance_data['trajectory_id'])
 
 
-    # call the models, override original actions and clip description with the predicted ones
-    instance_data = call_models(instance_data, model_vq, tokenizer, model_vla, tats_args, data_args, device)
+            # call the models, override original actions and clip description with the predicted ones
+            instance_data = call_models(instance_data, model_vq, tokenizer, model_vla, tats_args, data_args, device)
 
-    print(instance_data['clip_description'])
-    print(instance_data['actions'])
+            print(instance_data['clip_description'])
+            print(instance_data['actions'])
 
-    recon_frames = instance_data['vision']
+            recon_frames = instance_data['vision']
 
-    # save image
-    dst_dir = os.path.join('/mnt/data-rundong/visualize_frames/', 'test')
-    os.makedirs(dst_dir, exist_ok=True)
-    # save the input images
-    for i, frame in enumerate(recon_frames):
-        img = (frame + 0.5).clamp(0,1).numpy().transpose(1, 2, 0)
-        img = (img * 255).astype(np.uint8)
-        img = Image.fromarray(img)
-        img.save(os.path.join(dst_dir, f'{i}.png'))
+            # save image
+            dst_dir = os.path.join('/mnt/data-rundong/visualize_frames/', instance_data['trajectory_id'])
+            os.makedirs(dst_dir, exist_ok=True)
+            # save the input images
+            for i, frame in enumerate(recon_frames):
+                img = (frame + 0.5).clamp(0,1).numpy().transpose(1, 2, 0)
+                img = (img * 255).astype(np.uint8)
+                img = Image.fromarray(img)
+                img.save(os.path.join(dst_dir, f'{i}.png'))
 
     # call the robot, override the image_paths and actions with the actual ones
     # instance_data = call_robot(instance_data, robot)

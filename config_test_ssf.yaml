@@ -7,7 +7,7 @@ use_flash_attention_2: false
 # Data training arguments
 static_video_description:
   - ""
-src_filepath: ./test_data/sample-bridge.json
+src_filepath: ./test_data/sample-visualize.jsonl
 save_dir: /mnt/data-rundong/checkpoints/mistral/debug/pred_results_bridge2
 action_before_vision: false
 dataset_name: bridge2
