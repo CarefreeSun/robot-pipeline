@@ -74,11 +74,11 @@ def call_vla(instance_data: dict,
     video_tokens = video_tokens.cpu().numpy().tolist()
     action_tokens = action_tokens.cpu().numpy().tolist()
 
-    input_text = '<bott_i>' + instance_data['task_description'] + '<eott_i>' + \
-                '<bots_i>' + instance_data['scene_description'] + '<eots_i>' + \
-                '<botp_i>' + instance_data['clip_description'] + '<eotp_i>'
-    input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
-                '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>'
+    # input_text = '<bott_i>' + instance_data['task_description'] + '<eott_i>' + \
+    #             '<bots_i>' + instance_data['scene_description'] + '<eots_i>' + \
+    #             '<botp_i>' + instance_data['clip_description'] + '<eotp_i>'
+    # input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
+    #             '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>'
         
     # inputs = tokenizer(input_text, return_tensors='pt').to(device)
     # generate_ids = vla_pipe.generate(inputs.input_ids, max_length=2048)
@@ -95,7 +95,7 @@ def call_vla(instance_data: dict,
     output_action_tokens_pred = torch.tensor(output_action_tokens_pred, device=device).unsqueeze(0).reshape(1, 6, 7)
 
     # output_clip_description_pred = output_text.split(' <eotp_o>')[0].split('<botp_o> ')[-1]
-    output_clip_description_pred = input_text
+    output_clip_description_pred = ''
 
     return output_vision_tokens_pred, output_action_tokens_pred, output_clip_description_pred
 
@@ -214,7 +214,7 @@ def main():
             recon_frames = instance_data['vision']
 
             # save image
-            dst_dir = os.path.join('/mnt/data-rundong/visualize_frames/', instance_data['trajectory_id'])
+            dst_dir = os.path.join('/mnt/data-rundong/visualize_frames/', str(instance_data['trajectory_id']))
             os.makedirs(dst_dir, exist_ok=True)
             # save the input images
             for i, frame in enumerate(recon_frames):
