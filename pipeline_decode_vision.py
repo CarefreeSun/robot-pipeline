@@ -183,11 +183,12 @@ def main():
     )
 
     # Initialize LLM
-    llm_checkpoint_path = vla_args.model_name_or_path
-    model_vla = MistralInVisionActionFeatMask.from_pretrained(llm_checkpoint_path, 
-                                                        tokenizer, va_embed, 0., **model_kwargs)
-    # Load weights of embed_tokens
-    model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path).eval().to(device)
+    model_vla = None
+    # llm_checkpoint_path = vla_args.model_name_or_path
+    # model_vla = MistralInVisionActionFeatMask.from_pretrained(llm_checkpoint_path, 
+    #                                                     tokenizer, va_embed, 0., **model_kwargs)
+    # # Load weights of embed_tokens
+    # model_vla = load_safetensors_weights(model_vla, llm_checkpoint_path).eval().to(device)
 
     # 1. encode the images and actions
     # the src_filepath should contain the following fields
@@ -201,6 +202,7 @@ def main():
         instance_data = json.loads(line)
 
     instance_data['image_paths'] = generate_img_paths()
+
 
     # call the models, override original actions and clip description with the predicted ones
     instance_data = call_models(instance_data, model_vq, tokenizer, model_vla, tats_args, data_args, device)
