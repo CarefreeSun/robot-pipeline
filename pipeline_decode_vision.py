@@ -56,7 +56,7 @@ def encode(instance_data, model, tats_args, device):
         img = transform(img)
         video.append(img)
     video = torch.stack(video).permute(1,0,2,3).to(device) # [C, T, H, W]
-    action = torch.tensor(instance_data['actions']).to(device) # [T, 7]
+    action = torch.tensor(instance_data['actions'][:6]).to(device) # [T, 7]
 
     # normalize the actions
     action = (action - torch.tensor(instance_data['mean']).to(device)) / torch.tensor(instance_data['std']).to(device)
