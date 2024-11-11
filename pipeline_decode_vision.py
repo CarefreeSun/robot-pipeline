@@ -80,19 +80,22 @@ def call_vla(instance_data: dict,
     input_text += '<bov_i>' + ''.join([f'<va{str(x)}>' for x in video_tokens]) + '<eov_i>' + \
                 '<boa_i>' + ''.join([f'<va{str(x)}>' for x in action_tokens]) + '<eoa_i>'
         
-    inputs = tokenizer(input_text, return_tensors='pt').to(device)
-    generate_ids = vla_pipe.generate(inputs.input_ids, max_length=2048)
-    output_text = tokenizer.batch_decode(generate_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)[0]
-    print(output_text.split('<eotp_o>')[-1])
+    # inputs = tokenizer(input_text, return_tensors='pt').to(device)
+    # generate_ids = vla_pipe.generate(inputs.input_ids, max_length=2048)
+    # output_text = tokenizer.batch_decode(generate_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)[0]
+    # print(output_text.split('<eotp_o>')[-1])
     # output = vla_pipe([input_text], max_new_tokens=1024)
     # output_text = output[0].generated_text
-    output_vision_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eov_o>')[0].split('<bov_o>')[-1].split(' <va') if x != '']
+    # output_vision_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eov_o>')[0].split('<bov_o>')[-1].split(' <va') if x != '']
+    output_vision_tokens_pred = video_tokens
     output_vision_tokens_pred = torch.tensor(output_vision_tokens_pred, device=device).unsqueeze(0).reshape(1, 3, 16, 16)
     
-    output_action_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eoa_o>')[0].split('<boa_o>')[-1].split(' <va') if x != '']
+    # output_action_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eoa_o>')[0].split('<boa_o>')[-1].split(' <va') if x != '']
+    output_action_tokens_pred = action_tokens
     output_action_tokens_pred = torch.tensor(output_action_tokens_pred, device=device).unsqueeze(0).reshape(1, 6, 7)
 
-    output_clip_description_pred = output_text.split(' <eotp_o>')[0].split('<botp_o> ')[-1]
+    # output_clip_description_pred = output_text.split(' <eotp_o>')[0].split('<botp_o> ')[-1]
+    output_clip_description_pred = input_text
 
     return output_vision_tokens_pred, output_action_tokens_pred, output_clip_description_pred
 
