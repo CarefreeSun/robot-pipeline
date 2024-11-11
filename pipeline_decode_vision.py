@@ -158,18 +158,18 @@ def main():
     tokenizer = LlamaTokenizer.from_pretrained(vla_args.model_name_or_path)
     vocab_size = len(tokenizer)
     # add eos token when when calling tokenizer
-    visual_action_tokens_to_add = ['<va' + str(i) + '>' for i in range(0, data_args.num_visual_action_tokens)]
-    num_added_visual_action_tokens = tokenizer.add_special_tokens({'additional_special_tokens': visual_action_tokens_to_add})
-    special_tokens = ['<bott_i>', '<eott_i>', # task text
-                        '<bots_i>', '<eots_i>', # scene text
-                        '<botp_i>', '<eotp_i>', # policy text
-                        '<bov_i>', '<eov_i>', '<boa_i>', '<eoa_i>', # vision and action tokens
-                        '<botp_o>', '<eotp_o>', # output policy text
-                        '<bov_o>', '<eov_o>', '<boa_o>', '<eoa_o>'] # output vision and action tokens
-    num_added_special_tokens = tokenizer.add_special_tokens({'additional_special_tokens': special_tokens})
-    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-    # For SFT training, padding should be on the right (if overflow occurs)
-    tokenizer.padding_side = 'left'
+    # visual_action_tokens_to_add = ['<va' + str(i) + '>' for i in range(0, data_args.num_visual_action_tokens)]
+    # num_added_visual_action_tokens = tokenizer.add_special_tokens({'additional_special_tokens': visual_action_tokens_to_add})
+    # special_tokens = ['<bott_i>', '<eott_i>', # task text
+    #                     '<bots_i>', '<eots_i>', # scene text
+    #                     '<botp_i>', '<eotp_i>', # policy text
+    #                     '<bov_i>', '<eov_i>', '<boa_i>', '<eoa_i>', # vision and action tokens
+    #                     '<botp_o>', '<eotp_o>', # output policy text
+    #                     '<bov_o>', '<eov_o>', '<boa_o>', '<eoa_o>'] # output vision and action tokens
+    # num_added_special_tokens = tokenizer.add_special_tokens({'additional_special_tokens': special_tokens})
+    # tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+    # # For SFT training, padding should be on the right (if overflow occurs)
+    # tokenizer.padding_side = 'left'
     
     # use float16 (V100 does not support bfloat16)
     torch_dtype = torch.float16
