@@ -83,6 +83,7 @@ def call_vla(instance_data: dict,
     inputs = tokenizer(input_text, return_tensors='pt').to(device)
     generate_ids = vla_pipe.generate(inputs.input_ids, max_length=2048)
     output_text = tokenizer.batch_decode(generate_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)[0]
+    print(output_text)
     # output = vla_pipe([input_text], max_new_tokens=1024)
     # output_text = output[0].generated_text
     output_vision_tokens_pred = [int(x[:-1]) for x in output_text.split(' <eov_o>')[0].split('<bov_o>')[-1].split(' <va') if x != '']
