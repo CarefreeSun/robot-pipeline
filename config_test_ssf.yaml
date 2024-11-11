@@ -1,5 +1,5 @@
 # VLA Model arguments
-model_name_or_path: /mnt/data-rundong/VLA-experiments/0812-tokenize0722-step_95000-bridgeRT-VisionFirst-vaFeat-noMask-mistral-piece2of2/checkpoint-24000/
+model_name_or_path: /mnt/data-rundong/VLA-experiments/0812-tokenize0722-step_95000-bridgeRT-VisionFirst-vaFeat-noMask-mistral-piece1of2/checkpoint-24000/
 model_revision: main
 torch_dtype: float16
 use_flash_attention_2: false
