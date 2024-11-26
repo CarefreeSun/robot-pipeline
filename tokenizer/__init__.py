@@ -6,8 +6,8 @@ from .dataloader_VLA import get_image_action_dataloader
 from .tats_vqgan import VQGAN
 from .tats_vision import VQGANVision
 # from .tats_vision_action import VQGANVisionAction, VQGANVisionActionEval
-from .tats_dinov2_action import VQGANDinoV2Action as VQGANVisionAction
-from .tats_dinov2_action import VQGANDinoV2ActionEval as VQGANVisionActionEval
+from .joint_vq import VQGANDinoV2Action as VQGANVisionAction
+from .joint_vq import VQGANDinoV2ActionEval as VQGANVisionActionEval
 from .tats_transformer import Net2NetTransformer
 from .utils import count_parameters, AverageMeter
 

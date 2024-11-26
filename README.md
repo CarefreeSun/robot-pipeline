@@ -43,3 +43,6 @@ NEW 4-layer Action Decoder
 
 # Update by Sun Shaofan 10.18
 NEW 2- and 3- layer Action Decoder 
+
+# Update by Sun Shaofan 11.26
+NEW pipeline, see tokenizer/joint_vq.py, pipeline_1126.py
