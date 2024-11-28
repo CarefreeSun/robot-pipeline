@@ -2,7 +2,7 @@
 
 from .data import VideoData
 from .download import load_transformer, load_vqgan, download
-from .dataloader_VLA import get_image_action_dataloader
+from .dataloader_VLA import get_image_action_dataloader_width, ImageActionDatasetGripperWidth
 from .tats_vqgan import VQGAN
 from .tats_vision import VQGANVision
 # from .tats_vision_action import VQGANVisionAction, VQGANVisionActionEval

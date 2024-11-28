@@ -125,7 +125,7 @@ def main():
     local_rank = os.getenv('LOCAL_RANK', 0)
     device = f'cuda:{local_rank}'
 
-    assert tats_args.sequence_length == 6
+    assert tats_args.sequence_length == 3
 
     # 0. define the vq model and vla model
     model_vq = VQGANVisionActionEval(tats_args)

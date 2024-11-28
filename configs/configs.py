@@ -336,7 +336,7 @@ class TATSModelArguments:
         metadata={"help": "The number of action layers."}
     )
     sequence_length: int = field (
-        default=6,
+        default=3,
         metadata={"help": "The sequence length."}
     )
     resolution: int = field (
